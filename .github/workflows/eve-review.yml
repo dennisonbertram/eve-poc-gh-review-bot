@@ -1,0 +1,35 @@
+name: Eve PR Review Bot
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Drive Eve review bot via session API
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVE_BOT_URL: ${{ secrets.EVE_BOT_URL }}
+          EVE_BOT_PASSWORD: ${{ secrets.EVE_BOT_PASSWORD }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          OWNER=${{ github.repository_owner }}
+          REPO=${{ github.event.repository.name }}
+
+          # Start a session asking the deployed Eve bot to review this PR.
+          SESSION=$(curl -s -f \
+            -u "operator:${EVE_BOT_PASSWORD}" \
+            -X POST "${EVE_BOT_URL}/eve/v1/session" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": \"Review pull request #${PR_NUMBER} in ${OWNER}/${REPO} and post your review.\"}")
+
+          echo "Session response: $SESSION"
+          SID=$(echo "$SESSION" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8'); console.log(JSON.parse(d).sessionId)")
+
+          # Stream the response until done.
+          curl -s -f \
+            -u "operator:${EVE_BOT_PASSWORD}" \
+            "${EVE_BOT_URL}/eve/v1/session/${SID}/stream" \
+            | while IFS= read -r line; do echo "$line"; done
