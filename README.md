@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/banner.png" alt="Eve GitHub Review Bot" width="100%">
+</p>
+
 # 🤖 Eve GitHub Review Bot
 
 An autonomous **pull-request review bot** built on [Eve](https://github.com/vercel/eve), Vercel's open-source, filesystem-first agent framework. Point it at a pull request and it fetches the diff, reasons about it with an LLM, and posts a real GitHub review naming the actual defects — off-by-one errors, `==` vs `===`, missing null checks, ignored arguments, logic bugs.
