@@ -31,4 +31,17 @@ function first(arr) {
   return arr[0];                            // BUG: no null/undefined check — throws if arr is null
 }
 
-module.exports = { findIndex, sum, first };
+/**
+ * Filters items in arr that match predicate.
+ */
+function filter(arr, predicate) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (predicate(arr[i])) {
+      result.push(arr[i]);
+    }
+  }
+  return result;
+}
+
+module.exports = { findIndex, sum, first, filter };
